@@ -15,14 +15,18 @@ def retrieve_online_event( page = 1 ):
              
     data = urllib.urlencode(values)
     
+    
     the_page = urllib.urlopen('{0}?{1}'.format(url, data))
-    r = json.loads(the_page.read())
+    
+    html = the_page.read()
+    r = json.loads(html.decode('cp1252').encode('utf_8'))
+    
     return r['items'], r['pagination']
 
 
-
-if __name__ == '__main__':
     
+    
+def crawl_events_into_Mongo():
     client = MongoClient('localhost', 27017)
     
     db = client.nyc_events
@@ -42,6 +46,18 @@ if __name__ == '__main__':
             print 'On page {0}'.format(p)
         
     print cnt
+    
+    
+    
+    
+def test_crawling(p):
+    return retrieve_online_event( page = p )
+
+if __name__ == '__main__':
+    
+    
+    # r = test_crawling(88)
+    crawl_events_into_Mongo()
         
     
     
