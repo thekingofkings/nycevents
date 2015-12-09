@@ -3,6 +3,13 @@ import urllib
 import urllib2
 import json
 import sys
+from bs4 import BeautifulSoup
+
+
+"""
+Crawl events from
+http://www1.nyc.gov
+"""
 
 
 def retrieve_online_event( page = 1 ):
@@ -51,13 +58,43 @@ def crawl_events_into_Mongo():
     
     
 def test_crawling(p):
+    # test with page = 88, where the encoding error happened
     return retrieve_online_event( page = p )
+    
+    
+
+    
+    
+"""
+Crawl events from 
+http://www.nyc.com/events/
+"""
+
+
+def crawl_nyc_events( page = 1 ):
+    url = 'http://www.nyc.com/events/'
+    values = {  'int4': 1,
+                'from': '1/1/2015',
+                'to':   '12/31/2015',
+                'p': page }
+    
+    data = urllib.urlencode(values)
+    the_page = urllib.urlopen('{0}?{1}'.format(url, data))
+    
+    html = the_page.read()
+    soup = BeautifulSoup(html, 'html.parser')
+    return soup.find('ul', class_='eventrecords')
+
 
 if __name__ == '__main__':
     
     
     # r = test_crawling(88)
-    crawl_events_into_Mongo()
+    # crawl_events_into_Mongo()
+    s = crawl_nyc_events(2)
+    with open('test2.html', 'w') as fout:
+        fout.write(str(s))
+        
         
     
     
